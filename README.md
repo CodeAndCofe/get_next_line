@@ -85,7 +85,74 @@ Here, `stash` remembers the leftover text between calls. The `static` keyword co
 
 I also learned how the stack and heap differ and why the distinction matters when writing C programs.
 
-![Diagram comparing stack, static storage, and heap memory in get_next_line](assets/stack-vs-heap.svg)
+<img width="1200" height="650" alt="stack-vs-heap" src="https://github.com/user-attachments/assets/629fcf79-574a-4102-8854-8dc2fefd94e4" /><svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Stack, static storage, and heap in get_next_line</title>
+  <desc id="desc">Diagram showing local variables on the stack, a static stash pointer in static storage, and dynamically allocated character buffers on the heap.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1220"/><stop offset="1" stop-color="#16263d"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 Z" fill="#94a3b8"/></marker>
+    <marker id="greenArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 Z" fill="#34d399"/></marker>
+    <style>
+      .heading{font:700 27px sans-serif;fill:#f8fafc}.sub{font:16px sans-serif;fill:#cbd5e1}.label{font:700 18px sans-serif;fill:#f8fafc}.small{font:15px sans-serif;fill:#dbeafe}.code{font:16px monospace;fill:#e2e8f0}.note{font:15px sans-serif;fill:#cbd5e1}.stack{fill:#193c67;stroke:#60a5fa;stroke-width:2}.static{fill:#49346f;stroke:#c4b5fd;stroke-width:2}.heap{fill:#124e45;stroke:#34d399;stroke-width:2}.muted{stroke:#94a3b8;stroke-width:2;fill:none;marker-end:url(#arrow)}.green{stroke:#34d399;stroke-width:2.5;fill:none;marker-end:url(#greenArrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="650" rx="24" fill="url(#bg)"/>
+  <text x="44" y="55" class="heading">get_next_line: where does the data live?</text>
+  <text x="44" y="85" class="sub">Conceptual diagram — exact memory layout depends on the system and compiler.</text>
+
+  <!-- Stack column -->
+  <rect x="40" y="120" width="350" height="365" rx="18" fill="#101c2d" stroke="#2b4665"/>
+  <text x="64" y="158" class="label">1. Stack</text>
+  <text x="64" y="184" class="note">Automatic local variables / function calls</text>
+  <rect x="76" y="215" width="278" height="54" rx="8" class="stack"/>
+  <text x="215" y="238" text-anchor="middle" class="small">get_next_line() frame</text>
+  <text x="215" y="258" text-anchor="middle" class="small">local variables</text>
+  <rect x="76" y="280" width="278" height="54" rx="8" class="stack"/>
+  <text x="215" y="303" text-anchor="middle" class="small">read() temporary buffer</text>
+  <text x="215" y="323" text-anchor="middle" class="small">if declared as a local array</text>
+  <path d="M 215 345 L 215 380" class="muted"/>
+  <text x="215" y="405" text-anchor="middle" class="note">Function returns → its frame ends</text>
+  <text x="64" y="451" class="note">Lifetime is usually tied to the call.</text>
+  <text x="64" y="473" class="note">Do not return a pointer to a local variable.</text>
+
+  <!-- Static storage column -->
+  <rect x="425" y="120" width="350" height="365" rx="18" fill="#101c2d" stroke="#4c3a77"/>
+  <text x="449" y="158" class="label">2. Static storage</text>
+  <text x="449" y="184" class="note">The static pointer itself lives here</text>
+  <rect x="461" y="220" width="278" height="70" rx="8" class="static"/>
+  <text x="600" y="247" text-anchor="middle" class="code">static char *stash;</text>
+  <text x="600" y="271" text-anchor="middle" class="small">remembers state between calls</text>
+  <path d="M 600 291 L 600 334" class="green"/>
+  <text x="615" y="317" class="note">points to</text>
+  <rect x="480" y="342" width="240" height="65" rx="8" class="heap"/>
+  <text x="600" y="367" text-anchor="middle" class="small">allocated characters</text>
+  <text x="600" y="389" text-anchor="middle" class="small">on the heap</text>
+  <text x="449" y="451" class="note">The pointer and pointed-to memory</text>
+  <text x="449" y="473" class="note">are different things with different lifetimes.</text>
+
+  <!-- Heap column -->
+  <rect x="810" y="120" width="350" height="365" rx="18" fill="#101c2d" stroke="#1b705f"/>
+  <text x="834" y="158" class="label">3. Heap</text>
+  <text x="834" y="184" class="note">Dynamic allocations with malloc()</text>
+  <rect x="850" y="220" width="270" height="55" rx="8" class="heap"/>
+  <text x="985" y="243" text-anchor="middle" class="small">allocated stash / joined text</text>
+  <text x="985" y="263" text-anchor="middle" class="small">retained between calls</text>
+  <rect x="850" y="291" width="270" height="55" rx="8" class="heap"/>
+  <text x="985" y="314" text-anchor="middle" class="small">returned line</text>
+  <text x="985" y="334" text-anchor="middle" class="small">owned by the caller</text>
+  <path d="M 985 355 L 985 389" class="muted"/>
+  <text x="985" y="415" text-anchor="middle" class="note">free() when no longer needed</text>
+  <text x="834" y="451" class="note">Allocated memory remains until freed</text>
+  <text x="834" y="473" class="note">or the process terminates.</text>
+
+  <!-- Bottom takeaway -->
+  <rect x="40" y="510" width="1120" height="106" rx="16" fill="#0a1423" stroke="#334155"/>
+  <text x="64" y="544" class="label">Key idea</text>
+  <text x="64" y="572" class="small">A static pointer can remember the leftover text between calls, while that text is stored in dynamically allocated memory.</text>
+  <text x="64" y="597" class="small">When the line is returned, preserve any remaining characters and free allocations that are no longer needed.</text>
+</svg>
+
+
 
 **The stack** is commonly used for function-call information and automatic local variables. Its memory is managed automatically as functions are called and return. For example:
 
