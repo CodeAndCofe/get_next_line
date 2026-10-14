@@ -85,7 +85,7 @@ Here, `stash` remembers the leftover text between calls. The `static` keyword co
 
 I also learned how the stack and heap differ and why the distinction matters when writing C programs.
 
-![stack-vs-heap](assets/stack-vs-<img width="1200" height="650" alt="stack-vs-heap" src="https://github.com/user-attachments/assets/4aa6e16a-504f-4eff-a558-e5fa9e43a987" />.svg)
+![stack-vs-heap](
 
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
   <title id="title">Stack, static storage, and heap in get_next_line</title>
@@ -154,7 +154,7 @@ I also learned how the stack and heap differ and why the distinction matters whe
   <text x="64" y="597" class="small">When the line is returned, preserve any remaining characters and free allocations that are no longer needed.</text>
 </svg>
 
-
+)
 **The stack** is commonly used for function-call information and automatic local variables. Its memory is managed automatically as functions are called and return. For example:
 
 ```c
